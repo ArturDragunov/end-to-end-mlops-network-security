@@ -1,8 +1,10 @@
 from dataclasses import dataclass
-
+# artifacts are the outputs from the pipeline step.
+# e.g. DataIngestionArtifact comes at the end of DataIngestion.
+# and DataValidation uses DataIngestionArtifact as input
 @dataclass
 class DataIngestionArtifact:
-    trained_file_path:str
+    train_file_path:str
     test_file_path:str
 
 @dataclass

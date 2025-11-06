@@ -29,8 +29,8 @@ print(get_requirements())
 setup(
     name="networksecurity",
     version="0.0.1",
-    author="sunny savita",
-    author_email="snshrivas3365@gmail.com",
+    author="Artur Dragunov",
+    author_email="artur.dragunov.career@gmail.com",
     packages = find_packages(),
     install_requires=get_requirements()
 )

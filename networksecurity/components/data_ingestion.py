@@ -17,16 +17,18 @@ from sklearn.model_selection import train_test_split
 from dotenv import load_dotenv
 load_dotenv()
 MONGO_DB_URL=os.getenv("MONGO_DB_URL")
-print(MONGO_DB_URL)
 
 class DataIngestion:
     def __init__(self,data_ingestion_config:DataIngestionConfig):
         try:
+        #   DataIngestionConfig is a configuration class for managing all paths
+        #   and parameters related to the data ingestion process
             self.data_ingestion_config=data_ingestion_config
         except Exception as e:
             raise NetworkSecurityException(e,sys)
         
     def export_collection_as_dataframe(self):
+        """Load records from MongoDB and transform them into dataframe"""
         try:
             database_name=self.data_ingestion_config.database_name
             collection_name=self.data_ingestion_config.collection_name
@@ -34,7 +36,7 @@ class DataIngestion:
             self.mongo_client=pymongo.MongoClient(MONGO_DB_URL)
             collection = self.mongo_client[database_name][collection_name]
             
-            df=pd.DataFrame(list(collection.find()))
+            df=pd.DataFrame(list(collection.find())) # find() Get a sub-collection of this collection by name.
             if "_id" in df.columns.to_list():
                 df = df.drop(columns=["_id"], axis=1)
 
@@ -46,6 +48,9 @@ class DataIngestion:
             raise NetworkSecurityException(e,sys)
         
     def export_data_into_feature_store(self,dataframe: pd.DataFrame):
+        """A feature store is a centralized data repository for machine learning (ML) features,
+          which are the input variables used to train and run models.
+          You need one to ensure consistency between model training and deployment"""
         try:
             feature_store_file_path=self.data_ingestion_config.feature_store_file_path
             #creating folder
@@ -88,13 +93,13 @@ class DataIngestion:
         except Exception as e:
             raise NetworkSecurityException(e,sys)
         
-    def initiate_data_ingestion(self):
+    def initiate_data_ingestion(self): # main function which does all the steps
         try:
             dataframe=self.export_collection_as_dataframe()
             dataframe=self.export_data_into_feature_store(dataframe)
             self.split_data_as_train_test(dataframe=dataframe)
             
-            data_ingestion_artifact = DataIngestionArtifact(trained_file_path=self.data_ingestion_config.training_file_path,
+            data_ingestion_artifact = DataIngestionArtifact(train_file_path=self.data_ingestion_config.training_file_path,
             test_file_path=self.data_ingestion_config.testing_file_path)
             return data_ingestion_artifact
             

@@ -35,6 +35,10 @@ from networksecurity.cloud.s3_syncer import S3Sync
 from networksecurity.constant.training_pipeline import TRAINING_BUCKET_NAME
 from networksecurity.constant.training_pipeline import SAVED_MODEL_DIR
 class TrainingPipeline:
+    """
+    Class-level flag indicating whether the training pipeline is currently running.
+    Used to prevent multiple concurrent executions of the pipeline.
+    """
     is_pipeline_running=False
     def __init__(self):
          self.training_pipeline_config = TrainingPipelineConfig()

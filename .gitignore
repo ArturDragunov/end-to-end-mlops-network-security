@@ -5,3 +5,4 @@ Artifacts
 __pycache__
 /.env
 mlruns
+*.egg-info

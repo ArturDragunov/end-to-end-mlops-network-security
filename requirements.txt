@@ -16,5 +16,8 @@ mlflow
 dvc
 jinja2
 python-multipart
-
+# -e refers to setup.py and . refers to current directory
+ensure==1.0.4
+python-box==7.3.2
+joblib
 -e .

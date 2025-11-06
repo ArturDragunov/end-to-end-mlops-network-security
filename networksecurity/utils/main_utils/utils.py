@@ -5,16 +5,19 @@ import os,sys
 import numpy as np
 import dill
 import pickle
+from ensure import ensure_annotations
+from box import ConfigBox
 
-
-def read_yaml_file(file_path: str) -> dict:
+@ensure_annotations
+def read_yaml_file(file_path: str) -> ConfigBox:
     try:
         with open(file_path, "rb") as yaml_file:
-            return yaml.safe_load(yaml_file)
+            content = yaml.safe_load(yaml_file)
+            return ConfigBox(content)
     except Exception as e:
         raise NetworkSecurityException(e, sys) from e
 
-
+@ensure_annotations
 def write_yaml_file(file_path: str, content: object, replace: bool = False) -> None:
     try:
         if replace:
@@ -27,6 +30,7 @@ def write_yaml_file(file_path: str, content: object, replace: bool = False) -> N
         raise NetworkSecurityException(e, sys)
     
     
+@ensure_annotations
 def save_numpy_array_data(file_path: str, array: np.array):
     """
     Save numpy array data to file
@@ -42,6 +46,7 @@ def save_numpy_array_data(file_path: str, array: np.array):
         raise NetworkSecurityException(e, sys) from e
 
 
+@ensure_annotations
 def load_numpy_array_data(file_path: str) -> np.array:
     """
     load numpy array data from file
@@ -55,6 +60,7 @@ def load_numpy_array_data(file_path: str) -> np.array:
         raise NetworkSecurityException(e, sys) from e
 
 
+@ensure_annotations
 def save_object(file_path: str, obj: object) -> None:
     try:
         logging.info("Entered the save_object method of MainUtils class")
@@ -66,6 +72,7 @@ def save_object(file_path: str, obj: object) -> None:
         raise NetworkSecurityException(e, sys) from e
 
 
+@ensure_annotations
 def load_object(file_path: str, ) -> object:
     try:
         if not os.path.exists(file_path):
