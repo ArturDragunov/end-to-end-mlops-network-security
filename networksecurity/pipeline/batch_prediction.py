@@ -7,8 +7,7 @@ from networksecurity.logger.logger import logging
 from networksecurity.utils.ml_utils.model.estimator import ModelResolver
 from networksecurity.utils.main_utils.utils import load_object
 from datetime import datetime
-from networksecurity.constant.training_pipeline import PREDICTION_DIR
-from networksecurity.constant.training_pipeline import SAVED_MODEL_DIR
+from networksecurity.constant.training_pipeline.constants import PREDICTION_DIR, SAVED_MODEL_DIR
 
 print(PREDICTION_DIR)
 

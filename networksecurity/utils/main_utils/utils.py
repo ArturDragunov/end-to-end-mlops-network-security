@@ -7,7 +7,8 @@ import dill
 import pickle
 from ensure import ensure_annotations
 from box import ConfigBox
-
+from typing import Any
+import pandas as pd
 @ensure_annotations
 def read_yaml_file(file_path: str) -> ConfigBox:
     try:
@@ -17,7 +18,6 @@ def read_yaml_file(file_path: str) -> ConfigBox:
     except Exception as e:
         raise NetworkSecurityException(e, sys) from e
 
-@ensure_annotations
 def write_yaml_file(file_path: str, content: object, replace: bool = False) -> None:
     try:
         if replace:
@@ -82,3 +82,10 @@ def load_object(file_path: str, ) -> object:
             return pickle.load(file_obj)
     except Exception as e:
         raise NetworkSecurityException(e, sys) from e
+    
+@ensure_annotations
+def read_csv_data(file_path)->pd.DataFrame:
+    try:
+        return pd.read_csv(file_path)
+    except Exception as e:
+        raise NetworkSecurityException(e,sys)

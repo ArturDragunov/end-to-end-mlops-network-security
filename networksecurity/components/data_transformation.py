@@ -5,8 +5,7 @@ import pandas as pd
 from sklearn.impute import KNNImputer
 from sklearn.pipeline import Pipeline
 
-from networksecurity.constant.training_pipeline import TARGET_COLUMN
-from networksecurity.constant.training_pipeline import DATA_TRANSFORMATION_IMPUTER_PARAMS
+from networksecurity.constant.training_pipeline.constants import TARGET_COLUMN, DATA_TRANSFORMATION_IMPUTER_PARAMS
 from networksecurity.entity.artifact_entity import (
     DataTransformationArtifact,
     DataValidationArtifact,
@@ -15,7 +14,7 @@ from networksecurity.entity.config_entity import DataTransformationConfig
 from networksecurity.exception.exception import NetworkSecurityException 
 from networksecurity.logger.logger import logging
 #from networksecurity.utils.ml_utils.model.estimator import TargetValueMapping
-from networksecurity.utils.main_utils.utils import save_numpy_array_data, save_object
+from networksecurity.utils.main_utils.utils import save_numpy_array_data, save_object, read_csv_data
 
 
 
@@ -34,15 +33,6 @@ class DataTransformation:
 
         except Exception as e:
             raise NetworkSecurityException(e, sys)
-
-
-    @staticmethod
-    def read_data(file_path) -> pd.DataFrame:
-        try:
-            return pd.read_csv(file_path)
-        except Exception as e:
-            raise NetworkSecurityException(e, sys)
-
 
     def get_data_transformer_object(cls) -> Pipeline:
         """
@@ -87,10 +77,9 @@ class DataTransformation:
         try:
             logging.info("Starting data transformation")
             
-            #os.makedirs(self.data_transformation_config.transformed_data_dir, exist_ok=True)
-            
-            train_df = DataTransformation.read_data(self.data_validation_artifact.valid_train_file_path)
-            test_df = DataTransformation.read_data(self.data_validation_artifact.valid_test_file_path)
+            # if no file found, then it means that validation didn't pass
+            train_df = read_csv_data(self.data_validation_artifact.valid_train_file_path)
+            test_df = read_csv_data(self.data_validation_artifact.valid_test_file_path)
             preprocessor = self.get_data_transformer_object()
             
             logging.info("Got the preprocessor object")

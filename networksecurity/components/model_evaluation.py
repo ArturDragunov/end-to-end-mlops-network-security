@@ -8,7 +8,7 @@ from networksecurity.utils.ml_utils.metric.classification_metric import get_clas
 from networksecurity.utils.ml_utils.model.estimator import NetworkModel
 from networksecurity.utils.main_utils.utils import save_object,load_object,write_yaml_file
 from networksecurity.utils.ml_utils.model.estimator import ModelResolver
-from networksecurity.constant.training_pipeline import TARGET_COLUMN
+from networksecurity.constant.training_pipeline.constants import TARGET_COLUMN
 import pandas  as  pd
 import mlflow
 import mlflow.sklearn

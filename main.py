@@ -17,8 +17,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"]=AWS_SECRET_ACCESS_KEY
 
 import pymongo
 
-from networksecurity.constant.training_pipeline import DATA_INGESTION_COLLECTION_NAME
-from networksecurity.constant.training_pipeline import DATA_INGESTION_DATABASE_NAME
+from networksecurity.constant.training_pipeline.constants import SAVED_MODEL_DIR, DATA_INGESTION_COLLECTION_NAME, DATA_INGESTION_DATABASE_NAME
 from fastapi.responses import HTMLResponse
 from networksecurity.exception.exception import NetworkSecurityException
 from networksecurity.logger.logger import logging
@@ -32,7 +31,6 @@ from starlette.responses import RedirectResponse
 import pandas as pd
 
 from networksecurity.utils.ml_utils.model.estimator import ModelResolver
-from networksecurity.constant.training_pipeline import SAVED_MODEL_DIR
 
 from networksecurity.utils.main_utils.utils import load_object
 

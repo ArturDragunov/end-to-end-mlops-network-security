@@ -51,11 +51,17 @@ class DataValidationConfig:
         self.valid_test_file_path: str = os.path.join(self.valid_data_dir, TEST_FILE_NAME)
         self.invalid_train_file_path: str = os.path.join(self.invalid_data_dir, TRAIN_FILE_NAME)
         self.invalid_test_file_path: str = os.path.join(self.invalid_data_dir, TEST_FILE_NAME)
-        self.drift_report_file_path: str = os.path.join(
+        self.data_drift_report_file_path: str = os.path.join(
             self.data_validation_dir,
             DATA_VALIDATION_DRIFT_REPORT_DIR,
-            DATA_VALIDATION_DRIFT_REPORT_FILE_NAME,
+            DATA_VALIDATION_DATA_DRIFT_REPORT_FILE_NAME,
         )
+        self.concept_drift_report_file_path: str = os.path.join(
+            self.data_validation_dir,
+            DATA_VALIDATION_DRIFT_REPORT_DIR,
+            DATA_VALIDATION_CONCEPT_DRIFT_REPORT_FILE_NAME,
+        )
+
 
         
 class DataTransformationConfig:

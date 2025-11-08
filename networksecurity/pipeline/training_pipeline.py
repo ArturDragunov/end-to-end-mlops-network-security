@@ -32,8 +32,8 @@ from networksecurity.entity.artifact_entity import (
 )
 
 from networksecurity.cloud.s3_syncer import S3Sync
-from networksecurity.constant.training_pipeline import TRAINING_BUCKET_NAME
-from networksecurity.constant.training_pipeline import SAVED_MODEL_DIR
+from networksecurity.constant.training_pipeline.constants import TRAINING_BUCKET_NAME
+from networksecurity.constant.training_pipeline.constants import SAVED_MODEL_DIR
 class TrainingPipeline:
     """
     Class-level flag indicating whether the training pipeline is currently running.
@@ -52,8 +52,6 @@ class TrainingPipeline:
             data_ingestion_artifact=data_ingestion.initiate_data_ingestion()
             logging.info(f"Data ingestion completed and artifact: {data_ingestion_artifact}")
             return data_ingestion_artifact
-            
-            
         except Exception as e:
             raise NetworkSecurityException(e,sys)
         
@@ -135,7 +133,7 @@ class TrainingPipeline:
             data_ingestion_artifact=self.start_data_ingestion()
             #print(data_ingestion_artifact)
             data_validation_artifact=self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
-            #print(data_validation_artifact)
+            # print(data_validation_artifact)
             data_transformation_artifact=self.start_data_transformation(data_validation_artifact=data_validation_artifact)
             #print(data_transformation_artifact)
             
@@ -157,4 +155,6 @@ class TrainingPipeline:
             raise NetworkSecurityException(e,sys)
         
     
-
+if __name__=="__main__":
+    training_pipeline = TrainingPipeline()
+    training_pipeline.run_pipeline()
