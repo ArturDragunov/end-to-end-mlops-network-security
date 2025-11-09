@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Dict
 # artifacts are the outputs from the pipeline step.
 # e.g. DataIngestionArtifact comes at the end of DataIngestion.
 # and DataValidation uses DataIngestionArtifact as input
@@ -35,6 +36,8 @@ class ModelTrainerArtifact:
     trained_model_file_path: str
     train_metric_artifact: ClassificationMetricArtifact
     test_metric_artifact: ClassificationMetricArtifact
+    best_model_name: str
+    best_hyperparameters: Dict
 
 @dataclass
 class ModelEvaluationArtifact:

@@ -3,8 +3,7 @@ from networksecurity.exception.exception import NetworkSecurityException
 from networksecurity.logger.logger import logging
 import os,sys
 import numpy as np
-import dill
-import pickle
+import joblib
 from ensure import ensure_annotations
 from box import ConfigBox
 from typing import Any
@@ -18,7 +17,7 @@ def read_yaml_file(file_path: str) -> ConfigBox:
     except Exception as e:
         raise NetworkSecurityException(e, sys) from e
 
-def write_yaml_file(file_path: str, content: object, replace: bool = False) -> None:
+def write_yaml_file(file_path: str, content: object, replace: bool = True) -> None:
     try:
         if replace:
             if os.path.exists(file_path):
@@ -30,7 +29,6 @@ def write_yaml_file(file_path: str, content: object, replace: bool = False) -> N
         raise NetworkSecurityException(e, sys)
     
     
-@ensure_annotations
 def save_numpy_array_data(file_path: str, array: np.array):
     """
     Save numpy array data to file
@@ -46,7 +44,6 @@ def save_numpy_array_data(file_path: str, array: np.array):
         raise NetworkSecurityException(e, sys) from e
 
 
-@ensure_annotations
 def load_numpy_array_data(file_path: str) -> np.array:
     """
     load numpy array data from file
@@ -60,26 +57,22 @@ def load_numpy_array_data(file_path: str) -> np.array:
         raise NetworkSecurityException(e, sys) from e
 
 
-@ensure_annotations
 def save_object(file_path: str, obj: object) -> None:
     try:
         logging.info("Entered the save_object method of MainUtils class")
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        with open(file_path, "wb") as file_obj:
-            pickle.dump(obj, file_obj)
+        joblib.dump(obj, file_path)
         logging.info("Exited the save_object method of MainUtils class")
     except Exception as e:
         raise NetworkSecurityException(e, sys) from e
 
 
 @ensure_annotations
-def load_object(file_path: str, ) -> object:
+def load_object(file_path: str) -> object:
     try:
         if not os.path.exists(file_path):
-            raise Exception(f"The file: {file_path} is not exists")
-        with open(file_path, "rb") as file_obj:
-            print(file_obj)
-            return pickle.load(file_obj)
+            raise Exception(f"The file: {file_path} does not exist")
+        return joblib.load(file_path)
     except Exception as e:
         raise NetworkSecurityException(e, sys) from e
     

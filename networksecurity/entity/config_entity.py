@@ -83,8 +83,12 @@ class ModelTrainerConfig:
             self.model_trainer_dir, MODEL_TRAINER_TRAINED_MODEL_DIR, 
             MODEL_FILE_NAME
         )
+        self.best_hyperparameters_file_path: str = os.path.join(
+            self.model_trainer_dir, MODEL_TRAINER_TRAINED_MODEL_DIR, 
+            BEST_HYPERPARAMTERS
+        )
         self.expected_accuracy: float = MODEL_TRAINER_EXPECTED_SCORE
-        self.overfitting_underfitting_threshold = MODEL_TRAINER_OVER_FIITING_UNDER_FITTING_THRESHOLD
+        self.overfitting_underfitting_threshold = MODEL_TRAINER_OVER_FITTING_UNDER_FITTING_THRESHOLD
 
     
 class ModelEvaluationConfig:

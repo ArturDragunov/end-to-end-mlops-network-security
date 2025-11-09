@@ -33,11 +33,15 @@ class DataTransformation:
 
         except Exception as e:
             raise NetworkSecurityException(e, sys)
-
-    def get_data_transformer_object(cls) -> Pipeline:
+    @staticmethod
+    def get_data_transformer_object() -> Pipeline:
         """
         It initialises a KNNImputer object with the parameters specified in the training_pipeline.py file
         and returns a Pipeline object with the KNNImputer object as the first step.
+
+        With KNNImputer, each sample's missing values are imputed using the mean value from
+        `n_neighbors` nearest neighbors found in the training set. Two samples are
+        close if the features that neither is missing are close.
 
         Args:
           cls: DataTransformation
@@ -71,7 +75,7 @@ class DataTransformation:
 
 
     
-    def initiate_data_transformation(self,) -> DataTransformationArtifact:
+    def initiate_data_transformation(self) -> DataTransformationArtifact:
         logging.info("Entered initiate_data_transformation method of DataTransformation class")
 
         try:
@@ -80,7 +84,7 @@ class DataTransformation:
             # if no file found, then it means that validation didn't pass
             train_df = read_csv_data(self.data_validation_artifact.valid_train_file_path)
             test_df = read_csv_data(self.data_validation_artifact.valid_test_file_path)
-            preprocessor = self.get_data_transformer_object()
+            preprocessor = DataTransformation.get_data_transformer_object()
             
             logging.info("Got the preprocessor object")
 
@@ -98,7 +102,7 @@ class DataTransformation:
             transformed_input_train_feature = preprocessor_object.transform(input_feature_train_df)
             transformed_input_test_feature =preprocessor_object.transform(input_feature_test_df)
             
-
+            # you could keep it in pandas/polars as well, if in pipeline you specified it
             train_arr = np.c_[transformed_input_train_feature, np.array(target_feature_train_df) ]
             test_arr = np.c_[ transformed_input_test_feature, np.array(target_feature_test_df) ]
 

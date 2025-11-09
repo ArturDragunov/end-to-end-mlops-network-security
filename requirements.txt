@@ -20,4 +20,6 @@ python-multipart
 ensure==1.0.4
 python-box==7.3.2
 joblib
+optuna
+catboost
 -e .

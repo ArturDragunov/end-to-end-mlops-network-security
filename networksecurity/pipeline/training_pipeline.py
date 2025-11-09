@@ -135,26 +135,21 @@ class TrainingPipeline:
             data_validation_artifact=self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
             # print(data_validation_artifact)
             data_transformation_artifact=self.start_data_transformation(data_validation_artifact=data_validation_artifact)
-            #print(data_transformation_artifact)
+            print(data_transformation_artifact)
             
             model_trainer_artifact=self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
-            model_eval_artifact=self.start_model_evaluation(data_validation_artifact=data_validation_artifact,model_trainer_artifact=model_trainer_artifact)
-            if not model_eval_artifact.is_model_accepted:
-                #raise Exception("Trained model is not better than the best model")
-                print("Trained model is not better than the best model")
-            print(model_eval_artifact)
+            # model_eval_artifact=self.start_model_evaluation(data_validation_artifact=data_validation_artifact,model_trainer_artifact=model_trainer_artifact)
+            # if not model_eval_artifact.is_model_accepted:
+            #     #raise Exception("Trained model is not better than the best model")
+            #     print("Trained model is not better than the best model")
+            # print(model_eval_artifact)
             
-            model_pusher_artifact = self.start_model_pusher(model_eval_artifact)
+            # model_pusher_artifact = self.start_model_pusher(model_eval_artifact)
             
-            TrainingPipeline.is_pipeline_running=False
-            self.sync_artifact_dir_to_s3()
-            self.sync_saved_model_dir_to_s3()
+            # TrainingPipeline.is_pipeline_running=False
+            # self.sync_artifact_dir_to_s3()
+            # self.sync_saved_model_dir_to_s3()
         except Exception as e:
             self.sync_artifact_dir_to_s3()
             TrainingPipeline.is_pipeline_running=False
             raise NetworkSecurityException(e,sys)
-        
-    
-if __name__=="__main__":
-    training_pipeline = TrainingPipeline()
-    training_pipeline.run_pipeline()

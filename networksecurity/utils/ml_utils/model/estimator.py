@@ -24,6 +24,7 @@ class NetworkModel:
             raise NetworkSecurityException(e,sys)
 
 class ModelResolver:
+    """Class checks all models in artifacts in suggests the best model"""
     def __init__(self,model_dir=SAVED_MODEL_DIR):
         try:
             self.model_dir = model_dir
@@ -40,7 +41,7 @@ class ModelResolver:
         except Exception as e:
             raise e
 
-    def is_model_exists(self)->bool:
+    def is_model_available(self)->bool:
         try:
             if not os.path.exists(self.model_dir):
                 return False
