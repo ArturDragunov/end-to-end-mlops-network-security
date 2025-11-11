@@ -25,7 +25,8 @@ class ModelEvaluation:
             raise NetworkSecurityException(e,sys)
         
     def initiate_model_evaluation(self)->ModelEvaluationArtifact:
-        try:
+        try: # if validation was passed, then the file will be in available in valid_train_file_path
+            # if validation failed, then we have data in invalid_train_file_path, and we can observe it there
             valid_train_file_path = self.data_validation_artifact.valid_train_file_path
             valid_test_file_path = self.data_validation_artifact.valid_test_file_path
             
@@ -37,20 +38,20 @@ class ModelEvaluation:
 
             df = pd.concat([train_df,test_df])
             
-            print(df)
             y_true = df[TARGET_COLUMN]
             
             y_true.replace(-1, 0, inplace=True)
-            
             df.drop(TARGET_COLUMN,axis=1,inplace=True)
 
+            # model.joblib from best_hyperparameters.yaml
             train_model_file_path = self.model_trainer_artifact.trained_model_file_path
             
             model_resolver = ModelResolver()
             
             is_model_accepted=True
 
-
+            # if model is not available in saved_models folder, then
+            # we can't do any evaluations. We simply stick to train_model
             if not model_resolver.is_model_available():
                 model_evaluation_artifact = ModelEvaluationArtifact(
                     is_model_accepted=is_model_accepted, 
@@ -66,15 +67,17 @@ class ModelEvaluation:
                 return model_evaluation_artifact
 
             latest_model_path = model_resolver.get_best_model_path()
-            latest_model = load_object(file_path=latest_model_path)
+            latest_model = load_object(file_path=latest_model_path) # best model
             train_model = load_object(file_path=train_model_file_path)
             
             y_trained_pred = train_model.predict(df)
-            y_latest_pred  =latest_model.predict(df)
+            y_latest_pred  = latest_model.predict(df)
 
             trained_metric = get_classification_score(y_true, y_trained_pred)
             latest_metric = get_classification_score(y_true, y_latest_pred)
-
+            
+            # if the difference in accurancy between latest (best) model and trained model
+            # is not big enough, then we stick to trained model
             improved_accuracy = trained_metric.f1_score-latest_metric.f1_score
             if self.model_eval_config.change_threshold < improved_accuracy:
                 #0.02 < 0.03

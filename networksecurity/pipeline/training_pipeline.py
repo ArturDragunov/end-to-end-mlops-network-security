@@ -98,7 +98,7 @@ class TrainingPipeline:
         try:
             model_evaluation_config:ModelEvaluationConfig=ModelEvaluationConfig(training_pipeline_config=self.training_pipeline_config)
             model_eval=ModelEvaluation(model_evaluation_config,data_validation_artifact,model_trainer_artifact)
-            model_eval_artifact=model_eval.initiate_model_evaluation()
+            model_eval_artifact=model_eval.initiate_model_evaluation() # call model_eval object
             return  model_eval_artifact
 
         except Exception as e:
@@ -140,7 +140,7 @@ class TrainingPipeline:
             model_trainer_artifact=self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
             # model_eval_artifact=self.start_model_evaluation(data_validation_artifact=data_validation_artifact,model_trainer_artifact=model_trainer_artifact)
             # if not model_eval_artifact.is_model_accepted:
-            #     #raise Exception("Trained model is not better than the best model")
+            # #     #raise Exception("Trained model is not better than the best model")
             #     print("Trained model is not better than the best model")
             # print(model_eval_artifact)
             
