@@ -30,6 +30,7 @@ class ModelPusher:
             #saved model dir
             saved_model_path = self.model_pusher_config.saved_model_path
             os.makedirs(os.path.dirname(saved_model_path),exist_ok=True)
+            # push trained model to saved model location
             shutil.copy(src=trained_model_path, dst=saved_model_path)
 
             #prepare artifact

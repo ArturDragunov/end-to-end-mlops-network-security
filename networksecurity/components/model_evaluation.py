@@ -13,6 +13,9 @@ import pandas  as  pd
 import mlflow
 import mlflow.sklearn
 class ModelEvaluation:
+    """Model Evaluation compares previous model which is in production (which was pushed)
+    versus a newly trained model. If newly trained model is overperforming the production one,
+    only then we accept it."""
     def __init__(self,model_eval_config:ModelEvaluationConfig,
                     data_validation_artifact:DataValidationArtifact,
                     model_trainer_artifact:ModelTrainerArtifact):
@@ -35,7 +38,6 @@ class ModelEvaluation:
             train_df = pd.read_csv(valid_train_file_path)
             test_df = pd.read_csv(valid_test_file_path)
             
-
             df = pd.concat([train_df,test_df])
             
             y_true = df[TARGET_COLUMN]
@@ -52,6 +54,8 @@ class ModelEvaluation:
 
             # if model is not available in saved_models folder, then
             # we can't do any evaluations. We simply stick to train_model
+            # And model will be available in saved_models ONLY after the whole pipeline is done.
+            # In other words, after we managed to push a model in production, and it's saved in saved_models.
             if not model_resolver.is_model_available():
                 model_evaluation_artifact = ModelEvaluationArtifact(
                     is_model_accepted=is_model_accepted, 
@@ -65,9 +69,11 @@ class ModelEvaluation:
 
                 write_yaml_file(self.model_eval_config.report_file_path, model_eval_report)
                 return model_evaluation_artifact
-
+            
+            # latest model is the one which is saved at saved_models (after we ran entire pipeline in the past)
             latest_model_path = model_resolver.get_best_model_path()
-            latest_model = load_object(file_path=latest_model_path) # best model
+            latest_model = load_object(file_path=latest_model_path)
+            # train model is the current best model for this particular pipeline run
             train_model = load_object(file_path=train_model_file_path)
             
             y_trained_pred = train_model.predict(df)
@@ -77,7 +83,7 @@ class ModelEvaluation:
             latest_metric = get_classification_score(y_true, y_latest_pred)
             
             # if the difference in accurancy between latest (best) model and trained model
-            # is not big enough, then we stick to trained model
+            # is not big enough, then we stick to the lastest best model (currently in production)
             improved_accuracy = trained_metric.f1_score-latest_metric.f1_score
             if self.model_eval_config.change_threshold < improved_accuracy:
                 #0.02 < 0.03
@@ -85,7 +91,6 @@ class ModelEvaluation:
             else:
                 is_model_accepted=False
 
-            #print(is_model_accepted, improved_accuracy, latest_model_path, train_model_file_path, trained_metric, latest_metric)
             model_evaluation_artifact = ModelEvaluationArtifact(
                     is_model_accepted=is_model_accepted, 
                     improved_accuracy=improved_accuracy, 
@@ -94,15 +99,8 @@ class ModelEvaluation:
                     train_model_metric_artifact=trained_metric, 
                     best_model_metric_artifact=latest_metric)
 
-            model_eval_report = model_evaluation_artifact.__dict__
+            model_eval_report = model_evaluation_artifact.__dict__ # transform dataclass into dict format
             
-            #print(model_eval_report)
-
-            #save the report
-            #dir_path=os.path.dirname(self.model_eval_config.model_evaluation_dir)
-            #os.makedirs(dir_path,exist_ok=True)
-        
-
             write_yaml_file(self.model_eval_config.report_file_path, model_eval_report)
             logging.info(f"Model evaluation artifact: {model_evaluation_artifact}")
             

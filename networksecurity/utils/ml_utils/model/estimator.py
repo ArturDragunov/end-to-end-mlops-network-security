@@ -24,7 +24,10 @@ class NetworkModel:
             raise NetworkSecurityException(e,sys)
 
 class ModelResolver:
-    """Class checks all models in artifacts (all trials) and suggests the best model"""
+    """Class checks all models in saved_models folder and suggests the best one.
+    Saved_models folder is available after we did model pusher.
+    Multiple models will be held in saved_models, but under different sub-folder names.
+    We take the last (with max timestamp) as our best-performing model."""
     def __init__(self,model_dir=SAVED_MODEL_DIR):
         try:
             self.model_dir = model_dir

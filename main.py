@@ -7,7 +7,6 @@ ca = certifi.where()
 from dotenv import load_dotenv
 load_dotenv()
 mongo_db_url = os.getenv("MONGODB_URL_KEY")
-print(mongo_db_url)
 
 AWS_ACCESS_KEY_ID=os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY=os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -25,7 +24,7 @@ from networksecurity.pipeline.training_pipeline import TrainingPipeline
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, File, UploadFile,Request
-from uvicorn import run as app_run
+from uvicorn import run
 from fastapi.responses import Response
 from starlette.responses import RedirectResponse
 import pandas as pd
@@ -60,12 +59,13 @@ async def index():
 
 @app.get("/train")
 async def train_route():
+    # train model from scratch
     try:
         train_pipeline = TrainingPipeline()
         if train_pipeline.is_pipeline_running:
             return Response("Training pipeline is already running.")
         train_pipeline.run_pipeline()
-        return Response("Training successful !!")
+        return Response("Training ran successfully!!")
     except Exception as e:
             raise NetworkSecurityException(e,sys)
     
@@ -73,8 +73,8 @@ async def train_route():
 @app.post("/predict")
 async def predict_route(request: Request,file: UploadFile = File(...)):
     try:
+        # based on provided input csv, create output
         df=pd.read_csv(file.file)
-        #print(df)
         model = ModelResolver(model_dir=SAVED_MODEL_DIR)
         latest_model_path = model.get_best_model_path()
         latest_model = load_object(file_path=latest_model_path)
@@ -99,4 +99,4 @@ async def predict_route(request: Request,file: UploadFile = File(...)):
 
                
 if __name__=="__main__":
-    app_run(app, host="localhost", port=8000)
+    run(app, host="localhost", port=8000) # app run

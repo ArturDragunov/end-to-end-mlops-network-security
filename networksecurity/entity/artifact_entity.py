@@ -50,5 +50,6 @@ class ModelEvaluationArtifact:
 
 @dataclass
 class ModelPusherArtifact:
-    saved_model_path:str
+    # both are saving the same model, but just to different locations
+    saved_model_path:str 
     model_file_path:str
