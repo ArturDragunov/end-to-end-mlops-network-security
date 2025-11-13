@@ -8,10 +8,13 @@ from networksecurity.utils.ml_utils.metric.classification_metric import get_clas
 from networksecurity.utils.ml_utils.model.estimator import NetworkModel
 from networksecurity.utils.main_utils.utils import save_object,load_object,write_yaml_file
 from networksecurity.utils.ml_utils.model.estimator import ModelResolver
-from networksecurity.constant.training_pipeline.constants import TARGET_COLUMN
+from networksecurity.constant.training_pipeline.constants import MODEL_EVALUATION_EXPERIMENT_NAME, TARGET_COLUMN, MODEL_EVALUATION_NAME
 import pandas  as  pd
 import mlflow
 import mlflow.sklearn
+from mlflow.models import infer_signature
+from dotenv import load_dotenv
+load_dotenv()
 class ModelEvaluation:
     """Model Evaluation compares previous model which is in production (which was pushed)
     versus a newly trained model. If newly trained model is overperforming the production one,
@@ -104,16 +107,31 @@ class ModelEvaluation:
             write_yaml_file(self.model_eval_config.report_file_path, model_eval_report)
             logging.info(f"Model evaluation artifact: {model_evaluation_artifact}")
             
+            # *MLFlow part*
+            # Set MLflow tracking to your SQLite DB (or remote tracking server)
+            mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
+            # Use S3 for artifact storage
+            mlflow.set_experiment(MODEL_EVALUATION_EXPERIMENT_NAME)
+
             with mlflow.start_run():
-                f1_score=trained_metric.f1_score
-                precision_score=trained_metric.precision_score
-                recall_score=trained_metric.recall_score
-                
-                mlflow.log_metric("f1_score",f1_score)
-                mlflow.log_metric("precision_score",precision_score)
-                mlflow.log_metric("recall_score",recall_score)
-                
-                mlflow.sklearn.log_model(train_model,"model")
+                # Log metrics
+                mlflow.log_metrics({
+                    "f1_score": trained_metric.f1_score,
+                    "precision_score": trained_metric.precision_score,
+                    "recall_score": trained_metric.recall_score
+                })
+
+                # Log model with signature and input example
+                input_example = df[:5]
+                signature = infer_signature(df, y_trained_pred)
+
+                mlflow.sklearn.log_model(
+                    sk_model=train_model,
+                    name="model",
+                    input_example=input_example,
+                    signature=signature,
+                    registered_model_name=MODEL_EVALUATION_NAME,
+                )
                 
             return model_evaluation_artifact
         except Exception as e:

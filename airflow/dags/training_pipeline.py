@@ -1,6 +1,7 @@
 from asyncio import tasks
 import json
 from textwrap import dedent
+from networksecurity.constant.training_pipeline.constants import TRAINING_BUCKET_NAME
 import pendulum
 import os
 from airflow import DAG
@@ -28,7 +29,7 @@ with DAG(
         
     
     def sync_artifact_to_s3_bucket(**kwargs):
-        bucket_name = "mynetworksecurity"
+        bucket_name = TRAINING_BUCKET_NAME
         os.system(f"aws s3 sync /app/Artifacts s3://{bucket_name}/artifact")
         os.system(f"aws s3 sync /app/saved_models s3://{bucket_name}/saved_models")
 

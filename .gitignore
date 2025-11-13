@@ -6,3 +6,5 @@ __pycache__
 /.env
 mlruns
 *.egg-info
+saved_models
+*.db

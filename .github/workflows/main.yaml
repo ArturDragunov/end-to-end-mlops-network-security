@@ -8,7 +8,9 @@ on:
       - 'README.md'
 
 permissions:
+  # Enables short-lived credentials for AWS (or other clouds) — more secure than static secrets.
   id-token: write
+  # Lets the workflow read your code but not modify it (no push commits or PR)
   contents: read
 
 jobs:
@@ -18,7 +20,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
+      # for now, we haven't written unit tests or linting. If we do it, we need to change code below
       - name: Lint code
         run: echo "Linting repository"
 
