@@ -1,4 +1,4 @@
-!/bin/sh
+#!/bin/sh
 
 echo "Initializing Airflow DB..."
 airflow db migrate
