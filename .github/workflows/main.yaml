@@ -55,7 +55,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ secrets.AWS_REGION }}
 
       # Log in to ECR
       - id: login-ecr
@@ -64,25 +64,29 @@ jobs:
       # Pull the latest image from ECR
       - name: Pull Docker image
         run: |
-          docker pull 326541255324.dkr.ecr.us-east-1.amazonaws.com/networksecurityrepository:latest
+          docker pull ${{ secrets.AWS_ECR_LOGIN_URI }}:latest
 
       # Stop and remove old container if running
       - name: Stop old container
+        env:
+          CONTAINER_NAME: ${{ secrets.DOCKER_CONTAINER_NAME }}
         run: |
-          if docker ps -q --filter "name=networksecurity" | grep -q .; then
-            docker stop networksecurity
-            docker rm -fv networksecurity
+          if docker ps -q --filter "name=$CONTAINER_NAME" | grep -q .; then
+            docker stop $CONTAINER_NAME
+            docker rm -fv $CONTAINER_NAME
           fi
 
-      # Run Docker container
+      # Run new container
       - name: Run Docker container
+        env:
+          CONTAINER_NAME: ${{ secrets.DOCKER_CONTAINER_NAME }}
         run: |
-          docker run -d -p 80:8080 --name networksecurity \
+          docker run -d -p 80:8080 --name "$CONTAINER_NAME" \
             -e "MONGO_DB_URL=${{ secrets.MONGO_DB_URL }}" \
             -e "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" \
             -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            -e "AWS_REGION=us-east-1" \
-            326541255324.dkr.ecr.us-east-1.amazonaws.com/networksecurityrepository:latest
+            -e "AWS_REGION=${{ secrets.AWS_REGION }}" \
+            ${{ secrets.AWS_ECR_LOGIN_URI }}:latest
 
       # Clean old Docker resources
       - name: Clean Docker
