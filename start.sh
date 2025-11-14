@@ -11,6 +11,6 @@ airflow users create \
   --email admin@example.com \
   --password admin
 
-echo "Starting Airflow webserver and scheduler..."
-airflow webserver --port 8080 &
+echo "Starting Airflow api-server and scheduler..."
+airflow api-server --port 8080 &
 exec airflow scheduler
