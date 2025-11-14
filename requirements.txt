@@ -11,7 +11,7 @@ xgboost
 fastapi
 uvicorn
 ipykernel
-apache-airflow
+apache-airflow==2.6.3
 mlflow
 dvc
 jinja2
