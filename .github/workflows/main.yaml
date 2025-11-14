@@ -49,23 +49,41 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
+
+      # Configure AWS credentials
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-east-1
+
+      # Log in to ECR
       - id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      - run: docker pull ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
-      - run: |
-          docker ps -q --filter "name=${{ secrets.DOCKER_CONTAINER_NAME }}" | grep -q . && \
-          docker stop ${{ secrets.DOCKER_CONTAINER_NAME }} && \
-          docker rm -fv ${{ secrets.DOCKER_CONTAINER_NAME }}
-      - run: |
-          docker run -d -p 80:8080 --name ${{ secrets.DOCKER_CONTAINER_NAME }} \
+
+      # Pull the latest image from ECR
+      - name: Pull Docker image
+        run: |
+          docker pull 326541255324.dkr.ecr.us-east-1.amazonaws.com/networksecurityrepository:latest
+
+      # Stop and remove old container if running
+      - name: Stop old container
+        run: |
+          if docker ps -q --filter "name=networksecurity" | grep -q .; then
+            docker stop networksecurity
+            docker rm -fv networksecurity
+          fi
+
+      # Run Docker container
+      - name: Run Docker container
+        run: |
+          docker run -d -p 80:8080 --name networksecurity \
             -e "MONGO_DB_URL=${{ secrets.MONGO_DB_URL }}" \
             -e "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" \
             -e "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            -e "AWS_REGION=${{ secrets.AWS_REGION }}" \
-            ${{ secrets.AWS_ECR_LOGIN_URI }}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
-      - run: docker system prune -f
+            -e "AWS_REGION=us-east-1" \
+            326541255324.dkr.ecr.us-east-1.amazonaws.com/networksecurityrepository:latest
+
+      # Clean old Docker resources
+      - name: Clean Docker
+        run: docker system prune -f
