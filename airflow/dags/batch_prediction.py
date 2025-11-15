@@ -5,6 +5,7 @@ import pendulum
 import os
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from networksecurity.constant.training_pipeline.constants import PREDICTION_BUCKET_NAME, PREDICTION_DIR
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -15,18 +16,19 @@ with DAG(
     # [END default_args]
     description='Network Security Prediction',
     schedule_interval="@weekly",
-    start_date=pendulum.datetime(2024, 9, 1, tz="UTC"),
+    start_date=pendulum.datetime(2025, 11, 15, tz="UTC"),
     catchup=False,
     tags=['example'],
 ) as dag:
 
     
     def download_files(**kwargs):
-        bucket_name = "my-network-datasource"
+        # we are downloading data from S3 bucket
         input_dir = "/app/input_files"
         #creating directory
         os.makedirs(input_dir,exist_ok=True)
-        os.system(f"aws s3 sync s3://{bucket_name}/input_files /app/input_files")
+        # we are simply moving files from EC2 storage (ubuntu server) to S3 bucket
+        os.system(f"aws s3 sync s3://{PREDICTION_BUCKET_NAME}/input_files /app/input_files")
 
     def batch_prediction(**kwargs):
         from networksecurity.pipeline.batch_prediction import start_batch_prediction
@@ -36,9 +38,8 @@ with DAG(
             start_batch_prediction(input_file_path=os.path.join(input_dir,file_name))
     
     def sync_prediction_dir_to_s3_bucket(**kwargs):
-        bucket_name = "my-network-datasource"
         #upload prediction folder to predictionfiles folder in s3 bucket
-        os.system(f"aws s3 sync /app/prediction s3://{bucket_name}/prediction_files")
+        os.system(f"aws s3 sync /app/{PREDICTION_DIR} s3://{PREDICTION_BUCKET_NAME}/prediction_files")
     
 
     download_input_files  = PythonOperator(

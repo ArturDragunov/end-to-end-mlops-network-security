@@ -20,7 +20,7 @@ def start_batch_prediction(input_file_path):
         latest_model_path = model.get_best_model_path()
         
         logging.info(f"Reading file :{input_file_path}")
-        df = pd.read_csv(input_file_path)
+        df = pd.read_csv(input_file_path) # input data for predictions
         
         input_arr= df.values
         
@@ -34,7 +34,7 @@ def start_batch_prediction(input_file_path):
         prediction_file_name = os.path.basename(input_file_path).replace(".csv",f"{datetime.now().strftime('%m%d%Y__%H%M%S')}.csv")
         prediction_file_path = os.path.join(PREDICTION_DIR,prediction_file_name)
         df.to_csv(prediction_file_path,index=False,header=True)
-        return prediction_file_path
+        return prediction_file_path # input dataset together with predictions
     
     except Exception as e:
         raise NetworkSecurityException(e, sys)

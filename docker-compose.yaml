@@ -13,8 +13,6 @@ services:
       MONGO_DB_URL: ${MONGO_DB_URL}
       BUCKET_NAME: ${BUCKET_NAME}
     volumes:
-      - ./airflow:/app/airflow
-      - ./dags:/app/airflow/dags
       - ./Artifacts:/app/Artifacts
       - ./saved_models:/app/saved_models
     restart: unless-stopped

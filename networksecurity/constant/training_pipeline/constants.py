@@ -86,4 +86,4 @@ MODEL_PUSHER_SAVED_MODEL_DIR = SAVED_MODEL_DIR
 # these are S3 bucket names
 TRAINING_BUCKET_NAME = "network-security-training"
 PREDICTION_BUCKET_NAME = "network-security-datasource"
-PREDICTION_DIR="prediction"
+PREDICTION_DIR="prediction" # for batch-predictions
